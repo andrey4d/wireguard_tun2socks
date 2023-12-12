@@ -1,9 +1,53 @@
 version: "3.9"
 services:
 
+  tun2socks:
+    container_name: tun2socks
+    hostname: tun2socks
+    image: registry.home.local/tun2socks:latest
+    cap_add:
+      - NET_ADMIN
+    devices:
+      - "/dev/net/tun:/dev/net/tun"
+    environment:
+      - LOGLEVEL=info # default
+      - TUN=tun0 # default
+      - ADDR=198.18.0.1/15 # default
+      - MTU=9000 # default
+      - PROXY=${SOCKS5} # *required
+      - STATS=:8080 # optional
+      - RESTAPI= # optional
+      - TCP_SNDBUF= # optional
+      - TCP_RCVBUF= # optional
+      - TCP_AUTO_TUNING= # optional
+      - UDP_TIMEOUT= # optional
+      - EXTRA_COMMANDS= # optional
+      - TUN_INCLUDED_ROUTES= # optional
+      - TUN_EXCLUDED_ROUTES= # optional
+
+      # - GODEBUG=madvdontneed=1  # optional
+    # networks:
+    #   xray-switch:
+    #     # ipv4_address: 172.20.1.2
+    sysctls:
+      - net.ipv4.ip_forward=1
+      # - net.ipv4.conf.all.rp_filter=0
+    restart: unless-stopped
+    
+    deploy:
+      resources:
+        limits:
+          memory: "1000000000"
+    memswap_limit: 2000000000
+    mem_reservation: 512m
+    command:
+      - "/entrypoint.sh"
+
   wireguard:
     container_name: wireguard
+    hostname: wireguard
     image: registry.home.local/wireguard:latest
+
     cap_add:
       - NET_ADMIN
       - SYS_MODULE
@@ -12,26 +56,21 @@ services:
       - PGID=1000                     
       - TZ=Etc/UTC                    
       - SERVERURL=${SERVERURL}      
-      - PEERDNS=auto                  
+      - PEERDNS=false                  
       - INTERNAL_SUBNET=${INTERNAL_SUBNET} 
       - ALLOWEDIPS=0.0.0.0/0          
       - PERSISTENTKEEPALIVE_PEERS=    
       - LOG_CONFS=true                
       - PEERS=${PEERS}                
-
       - TUNNEL_GW=${TUNNEL_GW}
-      - WIRWGUARD_NET=${INTERNAL_SUBNET}/24
+      - WIRWGUARD_NET=${INTERNAL_SUBNET}
       - ROUTE_TABLE=${ROUTE_TABLE}
-
-    
-    networks:
-      xray-switch:
+    # networks:
+    #   xray-switch:
     sysctls:
       - net.ipv4.ip_forward=1
       - net.ipv4.conf.all.src_valid_mark=1
-      # - net.ipv4.conf.all.rp_filter=0
     restart: unless-stopped
-    
     volumes:
       - ./custom-cont-init.d:/custom-cont-init.d
       - ./volume/appdata/config:/config:z
@@ -45,8 +84,15 @@ services:
     memswap_limit: 2000000000
     mem_reservation: 512m
 
-networks:
-  xray-switch:
-    external:
-      name: ${NETWORK}
-    
+
+
+# networks:
+#   xray-switch:
+#     name: xray-switch
+#     driver_opts:
+#       com.docker.network.bridge.enable_icc: "true"
+#     ipam:
+#       driver: default
+#       config:
+#         - subnet: 172.20.1.0/24
+#           #          gateway: 172.20.1.2
