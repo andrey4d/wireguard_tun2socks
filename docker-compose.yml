@@ -1,0 +1,52 @@
+version: "3.9"
+services:
+
+  wireguard:
+    container_name: wireguard
+    image: registry.home.local/wireguard:latest
+    cap_add:
+      - NET_ADMIN
+      - SYS_MODULE
+    environment:
+      - PUID=1000                     
+      - PGID=1000                     
+      - TZ=Etc/UTC                    
+      - SERVERURL=${SERVERURL}      
+      - PEERDNS=auto                  
+      - INTERNAL_SUBNET=${INTERNAL_SUBNET} 
+      - ALLOWEDIPS=0.0.0.0/0          
+      - PERSISTENTKEEPALIVE_PEERS=    
+      - LOG_CONFS=true                
+      - PEERS=${PEERS}                
+
+      - TUNNEL_GW=${TUNNEL_GW}
+      - WIRWGUARD_NET=${INTERNAL_SUBNET}/24
+      - ROUTE_TABLE=${ROUTE_TABLE}
+
+    
+    networks:
+      xray-switch:
+    sysctls:
+      - net.ipv4.ip_forward=1
+      - net.ipv4.conf.all.src_valid_mark=1
+      # - net.ipv4.conf.all.rp_filter=0
+    restart: unless-stopped
+    
+    volumes:
+      - ./custom-cont-init.d:/custom-cont-init.d
+      - ./volume/appdata/config:/config:z
+      - /lib/modules:/lib/modules:z
+    ports:
+      - ${SERVER_PORT}:51820/udp
+    deploy:
+      resources:
+        limits:
+          memory: "1000000000"
+    memswap_limit: 2000000000
+    mem_reservation: 512m
+
+networks:
+  xray-switch:
+    external:
+      name: ${NETWORK}
+    
