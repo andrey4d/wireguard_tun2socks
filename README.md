@@ -24,3 +24,8 @@ wireguard:
         - SERVERURL=<HOSTNAME or IP>
         - PEERS=<COUNT>
 ```
+#### Get QR code
+```shell
+./get-qr.sh 1
+```
+
