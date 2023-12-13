@@ -1,4 +1,4 @@
-### Containers to make wireguard server through the socks5
+## This is a simple project that used  Containers to make wireguard server through the socks5
 ### wireguard -> tun2socks -> socks5
 ###
 
@@ -28,4 +28,10 @@ wireguard:
 ```shell
 ./get-qr.sh 1
 ```
+
+## :octocat: Git Resources
+
+https://github.com/xjasonlyu/tun2socks
+
+https://github.com/linuxserver/docker-wireguard
 
