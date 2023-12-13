@@ -1,5 +1,4 @@
 *.tgz
 *.7z
 misc
-volume/**
-
+config/**

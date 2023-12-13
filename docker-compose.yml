@@ -26,8 +26,8 @@ services:
       - UDP_TIMEOUT= # optional
       - EXTRA_COMMANDS= # optional
       - TUN_INCLUDED_ROUTES= # optional
-      - TUN_EXCLUDED_ROUTES= # optional
-      # - GODEBUG=madvdontneed=1  # optional
+      - TUN_EXCLUDED_ROUTES= #optional
+      # - GODEBUG=madvdontneed=1  # optional 
     sysctls:
       - net.ipv4.ip_forward=1
       # - net.ipv4.conf.all.rp_filter=0
@@ -36,14 +36,14 @@ services:
       resources:
         limits:
           cpus: "2"
-          memory: 512m
-    memswap_limit: 512m
+          memory: 256m
+    memswap_limit: 256m
     mem_reservation: 256m
 
   wireguard:
     container_name: wireguard
     hostname: wireguard
-    image: registry.home.local/wireguard:latest
+    image: lscr.io/linuxserver/wireguard:latest
     cap_add:
       - NET_ADMIN
       - SYS_MODULE
@@ -66,7 +66,7 @@ services:
     restart: unless-stopped
     volumes:
       - ./custom-cont-init.d:/custom-cont-init.d
-      - ./volume/appdata/config:/config:z
+      - ./config:/config:z
       - /lib/modules:/lib/modules:z
     ports:
       - 51820:51820/udp
@@ -74,7 +74,7 @@ services:
       resources:
         limits:
           cpus: "4"
-          memory: 1024m
-    memswap_limit: 1024m
+          memory: 512m
+    memswap_limit: 512m
     mem_reservation: 512m
 
