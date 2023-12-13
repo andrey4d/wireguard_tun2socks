@@ -20,4 +20,5 @@ COPY /rootfs /
 
 ENV TZ=Asia/Shanghai
 
-CMD [ "/usr/bin/tune2socks" ]
+#CMD [ "/usr/bin/tune2socks" ]
+ENTRYPOINT [ "/entrypoint.sh" ]

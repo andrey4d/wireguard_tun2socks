@@ -4,6 +4,9 @@ services:
   tun2socks:
     container_name: tun2socks
     hostname: tun2socks
+    build:
+      context: build
+      dockerfile: Dockerfile
     image: registry.home.local/tun2socks:latest
     cap_add:
       - NET_ADMIN
@@ -29,21 +32,18 @@ services:
       - net.ipv4.ip_forward=1
       # - net.ipv4.conf.all.rp_filter=0
     restart: unless-stopped
-    
     deploy:
       resources:
         limits:
-          memory: "1000000000"
-    memswap_limit: 2000000000
-    mem_reservation: 512m
-    command:
-      - "/entrypoint.sh"
+          cpus: "2"
+          memory: 512m
+    memswap_limit: 512m
+    mem_reservation: 256m
 
   wireguard:
     container_name: wireguard
     hostname: wireguard
     image: registry.home.local/wireguard:latest
-
     cap_add:
       - NET_ADMIN
       - SYS_MODULE
@@ -58,7 +58,7 @@ services:
       - PERSISTENTKEEPALIVE_PEERS=    
       - LOG_CONFS=true                
       - PEERS=1             
-      - TUNNEL_GW=TUNNEL_GW=tun2socks
+      - TUNNEL_GW=tun2socks
       - ROUTE_TABLE=250
     sysctls:
       - net.ipv4.ip_forward=1
@@ -73,7 +73,8 @@ services:
     deploy:
       resources:
         limits:
-          memory: "1000000000"
-    memswap_limit: 2000000000
+          cpus: "4"
+          memory: 1024m
+    memswap_limit: 1024m
     mem_reservation: 512m
 
