@@ -77,4 +77,3 @@ services:
           memory: 512m
     memswap_limit: 512m
     mem_reservation: 512m
-
