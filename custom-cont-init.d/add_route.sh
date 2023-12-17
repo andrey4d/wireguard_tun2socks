@@ -1,4 +1,4 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 
 TUNNEL_GW=${TUNNEL_GW:-"tun2socks"}
 INTERNAL_SUBNET=${INTERNAL_SUBNET:-"10.9.1.0"}
